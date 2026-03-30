@@ -12,7 +12,8 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
-
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Group;
 class PostForm
 {
     public static function configure(Schema $schema): Schema
@@ -20,6 +21,11 @@ class PostForm
         return $schema
             ->components([
                 //
+                Section::make("Post Details")
+                -> description("Fill in the details of the post.")
+                ->icon("heroicon-s-document-text")
+                ->schema([
+                Group::make([
                 TextInput::make('title')->required()->minLength(5),
                 TextInput::make('slug')->required()->unique(ignoreRecord: true),
                 Select::make("category_id")
@@ -27,12 +33,27 @@ class PostForm
                     ->preload()
                     ->searchable(),
                 ColorPicker::make("color"),
-                MarkdownEditor::make("body"),
                 // RichEditor::make("content"),
-                FileUpload::make("image")->disk("public")->directory("posts"),
-                TagsInput::make("tags"),
-                Checkbox::make("published"),
-                DateTimePicker::make("published_at"),
-            ]);
+                ])->columns(2),
+                MarkdownEditor::make("body"),
+                ])->columnSpan(2),
+
+                Group::make([
+                Section::make("Image Upload")
+                ->description("Upload an image for the post.")
+                ->icon("heroicon-s-photo")
+                ->schema([
+                    FileUpload::make("image")->disk("public")->directory("posts"),
+                ]),
+                Section::make("Meta Information")
+                ->description("Manage the meta information for the post.")
+                ->icon("heroicon-s-cog")
+                ->schema([
+                    TagsInput::make("tags"),
+                    Checkbox::make("published"),
+                    DateTimePicker::make("published_at"),
+                ])->columnSpan (1),
+                ]),
+            ])->columns(3);
     }
 }
