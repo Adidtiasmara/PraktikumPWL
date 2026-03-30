@@ -26,10 +26,20 @@ class PostForm
                 ->icon("heroicon-s-document-text")
                 ->schema([
                 Group::make([
-                TextInput::make('title')->required()->minLength(5),
-                TextInput::make('slug')->required()->unique(ignoreRecord: true),
+                TextInput::make('title')
+                ->rules(['required', 'min:5']),
+                // ->required()->minLength(5),
+                TextInput::make('slug')
+                ->required()
+                ->unique()
+                ->minLength(3)
+                ->validationMessages([
+                    'unique' => 'Slug harus unik dan tidak boleh sama.',
+                    
+                ]),
                 Select::make("category_id")
                     ->relationship("category", "name")
+                    ->required()
                     ->preload()
                     ->searchable(),
                 ColorPicker::make("color"),
@@ -43,7 +53,13 @@ class PostForm
                 ->description("Upload an image for the post.")
                 ->icon("heroicon-s-photo")
                 ->schema([
-                    FileUpload::make("image")->disk("public")->directory("posts"),
+                    FileUpload::make("image")
+                    ->required()
+                    ->disk("public")
+                    ->directory("posts")
+                    ->validationMessages([
+                        'required' => 'Gambar wajib diunggah.'
+                        ]),
                 ]),
                 Section::make("Meta Information")
                 ->description("Manage the meta information for the post.")
