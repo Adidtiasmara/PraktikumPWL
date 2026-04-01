@@ -35,13 +35,18 @@ class PostForm
                 ->minLength(3)
                 ->validationMessages([
                     'unique' => 'Slug harus unik dan tidak boleh sama.',
+                    'required' => 'Slug wajib diisi.',
+                    'minLength' => 'Slug minimal 3 karakter.',
                     
                 ]),
                 Select::make("category_id")
                     ->relationship("category", "name")
                     ->required()
                     ->preload()
-                    ->searchable(),
+                    ->searchable()
+                    ->validationMessages([
+                        'required' => 'Kategori wajib dipilih.',
+                    ]),
                 ColorPicker::make("color"),
                 // RichEditor::make("content"),
                 ])->columns(2),
