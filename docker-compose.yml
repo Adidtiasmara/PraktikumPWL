@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    image: php:8.2-cli
+    container_name: laravel_app
+    working_dir: /var/www
+    volumes:
+      - .:/var/www
+    ports:
+      - "8000:8000"
+    command: php -S 0.0.0.0:8000 -t public
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8.0
+    container_name: PraktikumPwl
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravel
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: laravel_pma
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: db
