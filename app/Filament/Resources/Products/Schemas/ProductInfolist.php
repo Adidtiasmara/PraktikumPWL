@@ -21,6 +21,7 @@ class ProductInfolist
                 Tabs::make('Product Tabs')
                     ->tabs([
                         Tab::make('Product Info')
+                            ->icon('heroicon-o-information-circle')
                             ->schema([
                                 TextEntry::make('name')
                                     ->label('Product Name')
@@ -33,7 +34,7 @@ class ProductInfolist
                                 TextEntry::make('sku')
                                     ->label('Product SKU')
                                     ->badge()
-                                    ->color('success'),
+                                    ->color('warning'),
 
                                 TextEntry::make('description')
                                     ->label('Product Description'),
@@ -44,17 +45,23 @@ class ProductInfolist
                             ])
                             ->columnSpanFull(),
                         Tab::make('Pricing & Stock')
+                            ->icon('heroicon-o-currency-dollar')
                             ->schema([
                                 TextEntry::make('price')
+                                    ->formatStateUsing(fn (string $state) => 'Rp ' . number_format($state, 0, ',', '.') . '')
                                     ->label('Product Price')
                                     ->weight('bold')
                                     ->color('primary')
                                     ->icon('heroicon-o-currency-dollar'),
                                 TextEntry::make('stock')
-                                    ->label('Product Stock'),
+                                    ->badge()
+                                    ->color(fn ($record) => $record->stock > 5 ? 'success' : 'danger')
+                                    ->label('Product Stock')
+                                    ->icon('heroicon-o-archive-box'),
                             ])
                             ->columnSpanFull(),
                         Tab::make('Image and Status')
+                        ->icon('heroicon-o-camera')
                             ->schema([
                                 ImageEntry::make('image')
                                     ->label('Product Image')
@@ -76,8 +83,9 @@ class ProductInfolist
                                     ->boolean(),
                             ])
                             ])
-                            ->columnSpanFull()
-                    ->vertical(),
+                            ->vertical()
+                            ->columnSpanFull(),
+                    
             ]);
     }
 }
