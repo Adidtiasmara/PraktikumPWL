@@ -9,6 +9,10 @@ use Filament\Tables\Table;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ColorColumn;
 use Filament\Tables\Columns\ImageColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Tables\Filters\SelectFilter;
 
 class PostsTable
 {
@@ -18,11 +22,14 @@ class PostsTable
             ->columns([
                 //
                 TextColumn::make('title')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('slug')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 TextColumn::make('category.name')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 ColorColumn::make('color'),
                 ImageColumn::make("image")->disk("public"),
                 TextColumn::make('created_at')
@@ -31,7 +38,24 @@ class PostsTable
                     ->sortable(),
             ])->defaultSort('created_at', 'asc')
             ->filters([
-                //
+                Filter::make ('created_at')
+                    ->Label('Creation Date')
+                    ->schema([
+                        DatePicker::make('created_at')
+                            ->label('Select Date :')
+                    ]),
+                SelectFilter::make('category_id')
+                    ->relationship('category', 'name')
+                    ->label('Category')
+                    ->preload()
+                    // Query Logic
+                    // ->query(function ( $query, $data) {
+                    //     return $query 
+                    //     ->when(
+                    //         $data['created_at'],
+                    //         fn ($query, $date) => $query->whereDate('created_at', $date),
+                    //     );
+                    // })
             ])
             ->recordActions([
                 EditAction::make(),
