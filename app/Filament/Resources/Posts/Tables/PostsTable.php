@@ -19,6 +19,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Checkbox;
+use Filament\Notifications\Notification;
 
 
 
@@ -44,6 +45,8 @@ class PostsTable
                     ->searchable()
                     ->toggleable(),
                 TextColumn::make('category.name')
+                    ->badge()
+                    ->color('primary')
                     ->sortable()
                     ->searchable()
                     ->toggleable(),
@@ -58,30 +61,36 @@ class PostsTable
                     ->toggleable(),
                 TextColumn::make('tags')
                     ->label('Tags')
+                    ->badge()
+                    ->color('info')
                     ->toggleable(),
                 IconColumn::make('published')
                     ->boolean()
-                    ->toggleable(),
-            ])->defaultSort('created_at', 'asc')
+                    ->toggleable()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
+            ])->defaultSort('created_at', 'desc')
             ->filters([
                 Filter::make('created_at')
                     ->Label('Creation Date')
                     ->schema([
                         DatePicker::make('created_at')
                             ->label('Select Date :')
-                    ]),
+                    ])
+                     ->query(function ($query, $data) {
+                        return $query
+                            ->when(
+                                $data['created_at'],
+                                fn($query, $date) => $query->whereDate('created_at', $date),
+                            );
+                    }),
                 SelectFilter::make('category_id')
                     ->relationship('category', 'name')
                     ->label('Category')
                     ->preload()
-                // Query Logic
-                // ->query(function ( $query, $data) {
-                //     return $query
-                //     ->when(
-                //         $data['created_at'],
-                //         fn ($query, $date) => $query->whereDate('created_at', $date),
-                //     );
-                // })
+                   
             ])
             ->recordActions([
                 ReplicateAction::make(),
@@ -96,6 +105,13 @@ class PostsTable
                     ])
                     ->action(function ($record, $data) {
                         $record->update(['published' => $data['published']]); // Logic untuk update data
+                        Notification::make()
+                            ->title('Status berhasil diubah')
+                            ->body($data['published']
+                                ? 'Post sekarang sudah Published '
+                                : 'Status diubah menjadi Not Published ')
+                            ->success()
+                            ->send();
                     })
             ])
             ->toolbarActions([
