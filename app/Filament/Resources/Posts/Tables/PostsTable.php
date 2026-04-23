@@ -17,6 +17,10 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\ReplicateAction;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
+
+
 
 
 
@@ -28,9 +32,9 @@ class PostsTable
             ->columns([
                 //
                 TextColumn::make("id")
-                ->label("ID")
-                ->sortable()
-                ->toggleable(isToggledHiddenByDefault: true),
+                    ->label("ID")
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('title')
                     ->sortable()
                     ->searchable()
@@ -60,7 +64,7 @@ class PostsTable
                     ->toggleable(),
             ])->defaultSort('created_at', 'asc')
             ->filters([
-                Filter::make ('created_at')
+                Filter::make('created_at')
                     ->Label('Creation Date')
                     ->schema([
                         DatePicker::make('created_at')
@@ -70,19 +74,29 @@ class PostsTable
                     ->relationship('category', 'name')
                     ->label('Category')
                     ->preload()
-                    // Query Logic
-                    // ->query(function ( $query, $data) {
-                    //     return $query 
-                    //     ->when(
-                    //         $data['created_at'],
-                    //         fn ($query, $date) => $query->whereDate('created_at', $date),
-                    //     );
-                    // })
+                // Query Logic
+                // ->query(function ( $query, $data) {
+                //     return $query
+                //     ->when(
+                //         $data['created_at'],
+                //         fn ($query, $date) => $query->whereDate('created_at', $date),
+                //     );
+                // })
             ])
             ->recordActions([
+                ReplicateAction::make(),
                 EditAction::make(),
                 DeleteAction::make(),
-
+                Action::make('Status')
+                    ->label('status change')
+                    ->icon('heroicon-o-check-circle') // Icon untuk status change
+                    ->schema([
+                        Checkbox::make('published')
+                            ->default(fn($record): bool => $record->published), // Form input untuk set status
+                    ])
+                    ->action(function ($record, $data) {
+                        $record->update(['published' => $data['published']]); // Logic untuk update data
+                    })
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
