@@ -15,6 +15,10 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ReplicateAction;
+
+
 
 class PostsTable
 {
@@ -77,6 +81,8 @@ class PostsTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
+
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
