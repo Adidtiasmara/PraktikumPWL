@@ -72,7 +72,10 @@ class PostForm
                 ->description("Manage the meta information for the post.")
                 ->icon("heroicon-s-cog")
                 ->schema([
-                    TagsInput::make("tags"),
+                    Select::make("tags")
+                    ->relationship("tags", "name")
+                    ->multiple()
+                    ->preload(),
                     Checkbox::make("published"),
                     DateTimePicker::make("published_at"),
                 ])->columnSpan (1),
