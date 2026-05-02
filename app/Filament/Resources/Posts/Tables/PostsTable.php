@@ -59,7 +59,7 @@ class PostsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(),
-                TextColumn::make('tags')
+                TextColumn::make('tags.name')
                     ->label('Tags')
                     ->badge()
                     ->color('info')

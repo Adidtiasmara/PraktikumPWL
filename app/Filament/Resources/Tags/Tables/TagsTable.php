@@ -14,6 +14,14 @@ class TagsTable
         return $table
             ->columns([
                 TextColumn::make("name")
+                    ->sortable()
+                    ->searchable(),
+                TextColumn::make("posts_count")
+                    ->counts('posts')
+                    ->label('Posts Count')
+                    ->sortable(),
+                    
+
             ])
             ->filters([
                 //
